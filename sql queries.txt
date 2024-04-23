@@ -1,0 +1,29 @@
+BASIC COMMANDS IN POSTGRES:
+\l-to show databases
+\c dbname-to connect to database
+\d tablename- to display the table struct
+\d-to display all table names
+
+
+
+
+
+
+QUERIES:
+1)CREATE DATABASE portfoliomgr;
+2)\c portfoliomgr;
+3)CREATE TABLE "user"(id INT,name VARCHAR(50),role VARCHAR(25));
+4) CREATE TABLE stock(symbol VARCHAR(6),name VARCHAR(25),sector VARCHAR(25));
+5)CREATE TABLE stock_owned(user_id INT,stock_symbol VARCHAR(6),qty INT);
+6) CREATE TABLE amount_invested(user_id INT,stock_symbol VARCHAR(6),price_purchased NUMERIC(12,4),current NUMERIC(12,4),profit_loss NUMERIC(12,4));
+7) ALTER TABLE "user" ADD CONSTRAINT userpk PRIMARY KEY(id);
+8)ALTER TABLE stock_owned ADD CONSTRAINT stockpk PRIMARY KEY(user_id,stock_symbol);
+9)ALTER TABLE stock ADD CONSTRAINT stockspk PRIMARY KEY(symbol);
+10)ALTER TABLE stock_owned ADD CONSTRAINT userfk1 FOREIGN KEY(user_id) REFERENCES "user"(id);
+11)ALTER TABLE stock_owned ADD CONSTRAINT stockfk1 FOREIGN KEY(stock_symbol) REFERENCES stock(symbol);
+12) ALTER TABLE stock_owned ADD CONSTRAINT userfk2 FOREIGN KEY(user_id) REFERENCES "user"(id),ADD CONSTRAINT stockfk2 FOREIGN KEY(stock_symbol) REFERENCES stock(symbol);
+13)ALTER TABLE "user" ADD COLUMN email VARCHAR(100), ADD COLUMN password VARCHAR(100);
+14)CREATE SEQUENCE user_id_seq;
+15)ALTER TABLE "user" ALTER COLUMN id SET DEFAULT nextval('user_id_seq');
+16)
+
