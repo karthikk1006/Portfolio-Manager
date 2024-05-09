@@ -1,23 +1,20 @@
 const express = require("express");
-const bodyParser = require('body-parser');
-const cors = require('cors');
-require("dotenv").config()
-const router = require("./routes/router")
-const app = express()
-
-
+const bodyParser = require("body-parser");
+const cors = require("cors");
+require("dotenv").config();
+const router = require("./routes/router");
+const app = express();
 
 // GLOBAL VARIABLES
-PORT = process.env.PORT || 5000;
-
+PORT = process.env.PORT || 5050;
 
 app.use(bodyParser.json());
-app.use(cors()); 
+app.use(cors());
+app.use(express.static("public"));
+app.use("/api/v1", router);
 
-app.use("/api/v1",router)
-
-app.listen(PORT,()=>{
-    console.log( "Server listening on port "+ PORT );
+app.listen(PORT, () => {
+  console.log("Server listening on port " + PORT);
 });
 
 // const { rows } = await client.query('BEGIN');

@@ -25,5 +25,4 @@ QUERIES:
 13)ALTER TABLE "user" ADD COLUMN email VARCHAR(100), ADD COLUMN password VARCHAR(100);
 14)CREATE SEQUENCE user_id_seq;
 15)ALTER TABLE "user" ALTER COLUMN id SET DEFAULT nextval('user_id_seq');
-16)
 
