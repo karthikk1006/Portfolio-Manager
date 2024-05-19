@@ -4,7 +4,7 @@ BASIC COMMANDS IN POSTGRES:
 \d tablename- to display the table struct
 \d-to display all table names
 
-
+    
 
 
 
@@ -25,5 +25,78 @@ QUERIES:
 13)ALTER TABLE "user" ADD COLUMN email VARCHAR(100), ADD COLUMN password VARCHAR(100);
 14)CREATE SEQUENCE user_id_seq;
 15)ALTER TABLE "user" ALTER COLUMN id SET DEFAULT nextval('user_id_seq');
-16)
+16)CREATE TABLE stock_price (symbol VARCHAR(6) PRIMARY KEY,date DATE NOT NULL,current_price NUMERIC(12, 4),low NUMERIC(12, 4),high NUMERIC(12, 4),prev_open NUMERIC(12, 4),prev_close NUMERIC(12, 4));
+17)ALTER TABLE amount_invested DROP COLUMN current;
+18)ALTER TABLE "user" DROP COLUMN role;
+19)ALTER TABLE stock_price DROP COLUMN prev_open,DROP COLUMN prev_close;
+20) ALTER TABLE stock_price RENAME current_price TO current;
+21) CREATE OR REPLACE FUNCTION update_profit_function()
+    RETURNS TRIGGER AS $$
+    BEGIN
+        UPDATE amount_invested ai
+        SET profit_loss = ((NEW.current - ai.price_purchased) * so.qty)
+        FROM stock_owned so
+        WHERE ai.stock_symbol = NEW.symbol AND ai.user_id = so.user_id AND ai.stock_symbol = so.stock_symbol;
+    
+        RETURN NULL;
+    END;
+    $$ LANGUAGE plpgsql;
+    
+    CREATE TRIGGER update_profit_trigger
+    AFTER UPDATE OF current ON stock_price
+    FOR EACH ROW
+    EXECUTE FUNCTION update_profit_function();
+    18/5
+22)  ALTER TABLE "user" ADD COLUMN p_or_l INTEGER;
+23) ALTER TABLE "user" ALTER COLUMN p_or_l SET DEFAULT 0;
+24) UPDATE "user" SET p_or_l=0;
+25) CREATE TABLE transaction_log (
+    id SERIAL PRIMARY KEY,
+    action VARCHAR(10) NOT NULL, -- 'buy' or 'sell'
+    user_id INTEGER NOT NULL,
+    stock_symbol VARCHAR(6) NOT NULL,
+    qty INTEGER NOT NULL,
+    current_price NUMERIC(12, 4) NOT NULL,
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+26) CREATE OR REPLACE FUNCTION log_transaction()
+RETURNS TRIGGER AS $$
+DECLARE
+    current_price NUMERIC(12, 4);
+BEGIN
+    -- Fetch the current price from the stock table
+    SELECT current INTO current_price
+    FROM stock_price
+    WHERE symbol = NEW.stock_symbol;
+
+    -- Insert into transaction_log table
+    INSERT INTO transaction_log (action, user_id, stock_symbol, qty, current_price)
+    VALUES (TG_ARGV[0], NEW.user_id, NEW.stock_symbol, NEW.qty, current_price);
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+27)CREATE TRIGGER log_sell
+AFTER UPDATE ON stock_owned
+FOR EACH ROW
+WHEN (OLD.qty > NEW.qty)
+EXECUTE FUNCTION log_transaction('sell');
+28) CREATE TRIGGER log_buy
+AFTER INSERT ON stock_owned
+FOR EACH ROW
+EXECUTE FUNCTION log_transaction('buy');
+29)ALTER TABLE "user"
+ALTER COLUMN p_or_l TYPE NUMERIC(12,4) USING p_or_l::numeric(12,4),
+ALTER COLUMN p_or_l SET DEFAULT 0;
+30) ALTER TABLE amount_invested
+ADD COLUMN purchase_date DATE;
+31) 
+
+
+
+
+
+
+
 

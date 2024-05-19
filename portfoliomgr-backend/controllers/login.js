@@ -3,7 +3,6 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 require("dotenv").config()
 
-const saltRounds = 10;
 
 module.exports.login = async(req,res)=>{
     const {email,password} = req.body;
@@ -22,7 +21,7 @@ module.exports.login = async(req,res)=>{
         delete user['password'];
         const userData = user;
         const token =  jwt.sign(user,process.env.SECRET_KEY, { expiresIn: '1h' });
-        return res.cookie("userData",token).status(200).json({status : "success", msg: "Login successful"});
+        return res.cookie("userData",token).status(200).json({status : "success", msg: "Login successful", data:userData});
     } catch (error) {
         console.log(error.message);
         return res.status(500).json({ error: 'Internal server error' });

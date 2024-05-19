@@ -4,6 +4,8 @@ const {createUser} = require("../controllers/createUser")
 const {addShare} = require("../controllers/addshare")
 const {getAllShares} = require("../controllers/getAllShares")
 const {login} = require("../controllers/login")
+const {sellShare} = require("../controllers/sellshare")
+const {getStockData} = require("../controllers/getStockData")
 
 const router = express.Router()
 
@@ -14,6 +16,10 @@ router.route("/addshare/:userId").post(addShare)
 router.route("/getshares/:userId").get(getAllShares)
 
 router.route("/login").post(login)
+
+router.route("/sellshare").post(sellShare)
+
+router.route("/getstockdata/:userId/:stockSymbol").get(getStockData)
 
 
 
