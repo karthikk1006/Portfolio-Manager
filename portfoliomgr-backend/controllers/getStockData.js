@@ -15,7 +15,7 @@ const getStockData = async (req, res) => {
 
     client.release();
 
-    const { price_purchased: pricePurchased, purchase_date: purchaseDate } = purchaseInfoResult.rows[0];
+    const { price_purchased: pricePurchased, purchase_date: purchaseDate } = purchaseInfoResult.rows[0] || {};
 
     const responseBody = {
       timeSeriesData: alphaVantageResponse.data["Time Series (Daily)"],
