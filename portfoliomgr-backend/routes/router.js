@@ -8,6 +8,7 @@ const {sellShare} = require("../controllers/sellshare")
 const {getStockData} = require("../controllers/getStockData")
 const {analysis} = require("../controllers/analysis")
 const {liquidate} = require("../controllers/liquidate")
+const {getSector} = require("../controllers/getsector")
 
 const router = express.Router()
 
@@ -25,7 +26,9 @@ router.route("/getstockdata/:userId/:stockSymbol").get(getStockData)
 
 router.route("/analysis").get(analysis)
 
-route.route("/liquidate/:userId").post(liquidate)
+router.route("/liquidate/:userId").post(liquidate)
+
+router.route("/getsector/:userId").get(getSector)
 
 
 
