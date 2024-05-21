@@ -91,7 +91,39 @@ ALTER COLUMN p_or_l TYPE NUMERIC(12,4) USING p_or_l::numeric(12,4),
 ALTER COLUMN p_or_l SET DEFAULT 0;
 30) ALTER TABLE amount_invested
 ADD COLUMN purchase_date DATE;
-31) 
+31) CREATE OR REPLACE PROCEDURE liquidate(IN user_id INT)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    total_amount NUMERIC := 0;
+    stock_record RECORD; 
+BEGIN
+    -- Calculate the total amount received from selling all shares
+    FOR stock_record IN
+        SELECT so.stock_symbol, so.qty AS qty, s.current AS current
+        FROM stock_owned so
+        JOIN stock s ON so.stock_symbol = s.symbol 
+        WHERE so.user_id = liquidate.user_id
+    LOOP
+        total_amount := total_amount + (stock_record.qty * stock_record.current);
+    END LOOP;
+    
+
+    -- Delete all shares owned by the user
+    DELETE FROM stock_owned
+    WHERE user_id = liquidate.user_id;
+
+    -- Delete the user's investment amount record
+    DELETE FROM amount_invested
+    WHERE user_id = liquidate.user_id;
+
+    -- Update the user's portfolio value in the user table
+    UPDATE "user"
+    SET p_or_l = p_or_l + total_amount
+    WHERE id = liquidate.user_id;
+END;
+$$;
+
 
 
 
